@@ -1,0 +1,67 @@
+@startuml questao2_abstract_factory
+skinparam classAttributeIconSize 0
+
+interface DocumentoFiscal {
+  +emitir(valor: double)
+  +getDescricao(): String
+}
+
+interface Pagamento {
+  +processar(valor: double)
+  +getDescricao(): String
+}
+
+interface EtiquetaEnvio {
+  +gerar(destinatario: String, endereco: String)
+  +getDescricao(): String
+}
+
+class NotaFiscalBrasil
+class PagamentoPix
+class EtiquetaCorreios
+
+class NotaFiscalAlemanha
+class PagamentoSepa
+class EtiquetaDeutschePost
+
+DocumentoFiscal <|.. NotaFiscalBrasil
+DocumentoFiscal <|.. NotaFiscalAlemanha
+Pagamento <|.. PagamentoPix
+Pagamento <|.. PagamentoSepa
+EtiquetaEnvio <|.. EtiquetaCorreios
+EtiquetaEnvio <|.. EtiquetaDeutschePost
+
+interface CheckoutFactory {
+  +criarDocumentoFiscal(): DocumentoFiscal
+  +criarPagamento(): Pagamento
+  +criarEtiquetaEnvio(): EtiquetaEnvio
+}
+
+class CheckoutBrasilFactory
+class CheckoutAlemanhaFactory
+
+CheckoutFactory <|.. CheckoutBrasilFactory
+CheckoutFactory <|.. CheckoutAlemanhaFactory
+
+CheckoutBrasilFactory ..> NotaFiscalBrasil : cria
+CheckoutBrasilFactory ..> PagamentoPix : cria
+CheckoutBrasilFactory ..> EtiquetaCorreios : cria
+
+CheckoutAlemanhaFactory ..> NotaFiscalAlemanha : cria
+CheckoutAlemanhaFactory ..> PagamentoSepa : cria
+CheckoutAlemanhaFactory ..> EtiquetaDeutschePost : cria
+
+class Checkout {
+  -factory: CheckoutFactory
+  +finalizarPedido(valor, destinatario, endereco)
+}
+
+Checkout o--> CheckoutFactory
+
+class Main
+
+Main ..> Checkout
+Main ..> CheckoutBrasilFactory
+Main ..> CheckoutAlemanhaFactory
+
+@enduml
